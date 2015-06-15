@@ -1,22 +1,28 @@
 require "moonscript"
 require "irc"
 
-irc.port = 6666
-irc.nick = "moonbot"
 
 
+port = 6666
+nick = "ban_ki-moon"
 
-irc.connect "irc.rizon.net", { :nick, :port }
-	init: (funcs) ->
-		import join, send from funcs
-		
-		join "#/g/technology"
-		
-		received: (msg) ->
-			if (string.sub msg, 1, 1) == ":"
-				user, command, at, text = msg\match ":([^%s]+) ([^%s]+) ([^%s]+) :?(.+)"
-				if command == "PRIVMSG" then
---					irc.log msg
-					if text == ".bots"
-						print at
-						send string.format "PRIVMSG %s :Reporting in! [Moonscript]", at	
+privmsg = (message) =>
+	import text, user, at from message
+
+--	irc.log msg
+
+	if text == ".bots"
+		@send string.format "PRIVMSG %s :Reporting in! [Moonscript]", at
+
+
+parse = (msg) =>
+	if (string.sub msg, 1, 1) == ":"
+		user, command, at, text = msg\match ":([^%s]+) ([^%s]+) ([^%s]+) :?(.+)"
+		if command == "PRIVMSG"
+			privmsg @, { :text, :user, :at }
+
+
+irc.connect "irc.rizon.net", :nick, :port 
+	init: =>
+		@join "#or/g/y"
+		received: (msg) -> parse @, msg
