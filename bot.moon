@@ -6,7 +6,7 @@ irc.nick = "moonbot"
 
 
 
-irc\connect "irc.rizon.net"
+irc.connect "irc.rizon.net", { :nick, :port }
 	init: (funcs) ->
 		import join, send from funcs
 		

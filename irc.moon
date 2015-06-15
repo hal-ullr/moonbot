@@ -13,15 +13,16 @@ msg = (client, message) ->
 
 
 
-connect = (server, options) =>
+connect = (server, options) ->
+	import nick, port from options
 	  --  Connect to server
 --	log string.format "Connecting to %s server on %s", server, @port
 --	log string.format "Using nick %s", @nick
 
-	client = socket.connect server, @port
+	client = socket.connect server, port
 	  --  Basic connection lines; all connections begin with these
-	msg client, string.format "USER %s 0 * :%s", @nick, @nick
-	msg client, string.format "NICK %s", @nick
+	msg client, string.format "USER %s 0 * :%s", nick, nick
+	msg client, string.format "NICK %s", nick
 	
 	callbacks = options.init
 		join: (channel) ->
