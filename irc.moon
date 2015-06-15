@@ -1,8 +1,7 @@
 require "socket"
 
 
-log = (str) ->
-	print string.format "LOG:\009%s", str
+log = (str) -> print string.format "LOG:\009%s", str
 
 
 msg = (client, message) ->
@@ -11,35 +10,36 @@ msg = (client, message) ->
 
 
 connect = (server, options, callbacks) ->
-	import nick, port from options
-	  --  Connect to server
---	log string.format "Connecting to %s server on %s", server, @port
---	log string.format "Using nick %s", @nick
 
-	client = socket.connect server, port
-	  --  Basic connection lines; all connections begin with these
+	import nick, port from options
+
+	log string.format "Connecting to %s server on %s", server, port
+	log string.format "Using nick %s", nick
+
+	client = socket.connect server, port  --  Connect to server
+	
 	msg client, string.format "USER %s 0 * :%s", nick, nick
 	msg client, string.format "NICK %s", nick
 	
 	bot = callbacks.init
 		join: (channel) =>
---			log string.format "Joining channel %s on server %s", channel, server
+			log string.format "Joining channel %s on server %s", 
+				channel, server
 			msg client, string.format "JOIN %s", channel
 
 		send: (message) =>
 			msg client, message
 
-	  --  Set client time-out
-	client\settimeout 0.1
-	  --  Loop for receiving messages
-	while true
+	client\settimeout 0.1  --  Set client time-out
+	
+	while true  --  Loop for receiving messages
 		message = client\receive!
 		if message
---			log message
 			if message == message\match "PING :.+"
-				msg client, string.format "PONG %s", message\match "PING :(.+)"
+				msg client, string.format "PONG %s", 
+					message\match "PING :(.+)"
 			else
 				bot.received message
 			
 
-export irc = {:connect}
+export irc = { :connect }

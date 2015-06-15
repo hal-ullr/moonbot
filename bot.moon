@@ -2,14 +2,13 @@ require "moonscript"
 require "irc"
 
 
-
 port = 6666
 nick = "ban_ki-moon"
 
-privmsg = (message) =>
-	import text, user, at from message
 
---	irc.log msg
+privmsg = (message) =>
+
+	import text, user, at from message
 
 	if text == ".bots"
 		@send string.format "PRIVMSG %s :Reporting in! [Moonscript]", at
