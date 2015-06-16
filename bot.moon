@@ -3,25 +3,28 @@ require "irc"
 
 
 port = 6666
-nick = "ban_ki-moon"
+nick = "moonbot"
 
 
-privmsg = (message) =>
+privmsg = (lib, message) ->
 
 	import text, user, at from message
 
 	if text == ".bots"
-		@send string.format "PRIVMSG %s :Reporting in! [Moonscript]", at
+		lib.send at, "Reporting in! [Moonscript]"
+
+    elseif text\lower!\match "big guy"
+        lib.send at, "\0034FOR YOU"
 
 
-parse = (msg) =>
+parse = (lib, msg) ->
 	if (string.sub msg, 1, 1) == ":"
 		user, command, at, text = msg\match ":([^%s]+) ([^%s]+) ([^%s]+) :?(.+)"
 		if command == "PRIVMSG"
-			privmsg @, { :text, :user, :at }
+			privmsg lib, { :text, :user, :at }
 
 
 irc.connect "irc.rizon.net", :nick, :port 
-	init: =>
-		@join "#or/g/y"
-		received: (msg) -> parse @, msg
+	init: (lib) ->
+		lib.join "#/g/technology"
+		received: (msg) -> parse lib, msg

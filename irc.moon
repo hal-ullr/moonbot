@@ -22,13 +22,13 @@ connect = (server, options, callbacks) ->
 	msg client, string.format "NICK %s", nick
 	
 	bot = callbacks.init
-		join: (channel) =>
+		join: (channel) ->
 			log string.format "Joining channel %s on server %s", 
 				channel, server
 			msg client, string.format "JOIN %s", channel
 
-		send: (message) =>
-			msg client, message
+		send: (at, message) ->
+			msg client, string.format "PRIVMSG %s :%s", at, message
 
 	client\settimeout 0.1  --  Set client time-out
 	
