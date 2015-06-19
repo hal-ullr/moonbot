@@ -1,3 +1,4 @@
+require "socket"
 require "moonscript"
 require "irc"
 
@@ -13,9 +14,6 @@ privmsg = (lib, message) ->
 	if text == ".bots"
 		lib.send at, "Reporting in! [Moonscript]"
 
-    elseif text\lower!\match "big guy"
-        lib.send at, "\0034FOR YOU"
-
 
 parse = (lib, msg) ->
 	if (string.sub msg, 1, 1) == ":"
@@ -26,5 +24,6 @@ parse = (lib, msg) ->
 
 irc.connect "irc.rizon.net", :nick, :port 
 	init: (lib) ->
+		socket.sleep 1
 		lib.join "#/g/technology"
 		received: (msg) -> parse lib, msg

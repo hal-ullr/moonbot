@@ -1,4 +1,4 @@
-require "socket"
+require "socket" if not socket
 
 
 log = (str) -> print string.format "LOG:\009%s", str
