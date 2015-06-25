@@ -21,7 +21,15 @@ connect = (server, options, callbacks) ->
 	msg client, string.format "USER %s 0 * :%s", nick, nick
 	msg client, string.format "NICK %s", nick
 	
-	bot = callbacks.init
+	bot = (callbacks or options).init
+		--  'callbacks' table arises from MoonScript interpreting
+		--  a function call with trailing table on a new line
+		--  and the same line as two tables:
+		--  print hello: "world"
+		--      world: "hello"
+		--  -> table: 0xe57fb0	table: 0xe58130
+		--  This could easily be a bug, so I'm hedging my bets,
+		--  so to speak
 		join: (channel) ->
 			log string.format "Joining channel %s on server %s", 
 				channel, server
@@ -35,7 +43,7 @@ connect = (server, options, callbacks) ->
 	while true  --  Loop for receiving messages
 		message = client\receive!
 		if message
-			print message
+			log message if os.getenv "LOG"
 			if message == message\match "PING :.+"
 				msg client, string.format "PONG %s", 
 					message\match "PING :(.+)"
