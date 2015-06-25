@@ -1,4 +1,4 @@
-require "socket" if not socket
+require "socket" unless socket
 
 
 log = (str) -> print string.format "LOG:\009%s", str
@@ -35,6 +35,7 @@ connect = (server, options, callbacks) ->
 	while true  --  Loop for receiving messages
 		message = client\receive!
 		if message
+			print message
 			if message == message\match "PING :.+"
 				msg client, string.format "PONG %s", 
 					message\match "PING :(.+)"

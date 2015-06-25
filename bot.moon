@@ -24,6 +24,10 @@ parse = (lib, msg) ->
 
 irc.connect "irc.rizon.net", :nick, :port 
 	init: (lib) ->
+		socket.sleep 3
+		do
+			password = os.getenv "PASSWORD"
+			lib.send "NickServ", "IDENTIFY " .. password if password
 		socket.sleep 1
-		lib.join "#/g/technology"
+		lib.join "#rice"
 		received: (msg) -> parse lib, msg
