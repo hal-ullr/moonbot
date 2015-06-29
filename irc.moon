@@ -4,8 +4,8 @@ require "socket" unless socket
 local log
 do
 	logging = not not os.getenv "LOG"
-	log = (str) ->
-		if logging
+	log = (str, overwrite) ->
+		if logging or overwrite
 			print string.format "LOG:\009%s", str
 
 

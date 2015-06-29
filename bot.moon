@@ -26,8 +26,8 @@ parse = (lib, msg) ->
 			privmsg lib, { :text, :user, :at }
 
 
-irc.connect "irc.rizon.net", :nick, :port, :version, (lib) ->
-	init = coroutine.create ->
+irc.connect "irc.rizon.net", :nick, :port, :version, (lib) -> {
+	init: coroutine.create ->
 		wait 10
 		do
 			password = os.getenv "PASSWORD"
@@ -35,7 +35,7 @@ irc.connect "irc.rizon.net", :nick, :port, :version, (lib) ->
 		wait 2
 		lib.join "#muhbottest"
 
-	received = (message) -> 
+	received: (message) -> 
 		if message == message\match "PING :.+"
 			lib.send string.format "PONG %s", 
 				message\match "PING :(.+)"
@@ -48,5 +48,4 @@ irc.connect "irc.rizon.net", :nick, :port, :version, (lib) ->
 
 		else
 			parse lib, message
-
-	{ :init, :received }
+}
