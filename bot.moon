@@ -4,7 +4,11 @@ require "thread"
 require "irc"
 
 
-port, nick = 6666, "moonbot"
+autojoin = { "#rice" }
+port = 6666
+nick = "moonbot"
+
+
 
 moonversion = "MoonScript " .. (require "moonscript.version").version
 luaversion = _VERSION
@@ -12,6 +16,7 @@ luaversion = _VERSION
 version = string.format "moonbot 0.1 [%s] [%s]",
 	moonversion,
 	luaversion
+
 
 
 privmsg = (lib, message) ->
@@ -27,12 +32,12 @@ privmsg = (lib, message) ->
 		lib.me at, "test"
 
 
+
 parse = (lib, msg) ->
 	if (string.sub msg, 1, 1) == ":"
 		user, command, at, text = msg\match ":([^%s]+) ([^%s]+) ([^%s]+) :?(.+)"
 		if command == "PRIVMSG"
 			privmsg lib, { :text, :user, :at }
-
 
 irc.connect "irc.rizon.net", :nick, :port, :version, (lib) -> {
 	init: fork ->
@@ -41,19 +46,19 @@ irc.connect "irc.rizon.net", :nick, :port, :version, (lib) -> {
 			password = os.getenv "PASSWORD"
 			lib.message "NickServ", "IDENTIFY " .. password if password
 		wait 2
-		lib.join "#muhbottest"
+		lib.join chan for chan in *autojoin
 
-	received: (message) -> 
-		if message == message\match "PING :.+"
-			lib.send string.format "PONG %s", 
-				message\match "PING :(.+)"
+	received: (msg) ->  --  Function for receiving messages
+		if msg == msg\match "PING :.+"
+			lib.send string.format "PONG %s",
+				msg\match "PING :(.+)"
 
-		elseif message == message\match ":[^%s]+ PRIVMSG [^%s]+ :\001VERSION\001"
+		elseif msg == msg\match ":[^%s]+ PRIVMSG [^%s]+ :\001VERSION\001"
 			lib.log ("Sent version %s"\format version)
 			lib.send string.format "NOTICE %s :\001VERSION %s\001", 
-				message\match ":(.-)![^%s]+ PRIVMSG [^%s]+ :\001VERSION\001",
+				msg\match ":(.-)![^%s]+ PRIVMSG [^%s]+ :\001VERSION\001",
 				version
 
 		else
-			parse lib, message
+			parse lib, msg
 }
