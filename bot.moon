@@ -1,12 +1,17 @@
 require "socket"
 require "moonscript"
-require "irc"
 require "thread"
+require "irc"
 
 
-port = 6666
-nick = "moonbot"
-version = "moonbot 0.1"
+port, nick = 6666, "moonbot"
+
+moonversion = "MoonScript " .. (require "moonscript.version").version
+luaversion = _VERSION
+
+version = string.format "moonbot 0.1 [%s] [%s]",
+	moonversion,
+	luaversion
 
 
 privmsg = (lib, message) ->
@@ -14,7 +19,10 @@ privmsg = (lib, message) ->
 	import text, user, at from message
 
 	if text == ".bots"
-		lib.message at, "Reporting in! [Moonscript]"
+		lib.message at, string.format "Reporting in! [%s on %s]",
+			moonversion,
+			luaversion
+
 	if text == ".me"
 		lib.me at, "test"
 
@@ -27,7 +35,7 @@ parse = (lib, msg) ->
 
 
 irc.connect "irc.rizon.net", :nick, :port, :version, (lib) -> {
-	init: coroutine.create ->
+	init: fork ->
 		wait 10
 		do
 			password = os.getenv "PASSWORD"

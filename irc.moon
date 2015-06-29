@@ -1,6 +1,3 @@
-require "socket" unless socket
-
-
 local log
 do
 	logging = not not os.getenv "LOG"
@@ -47,7 +44,7 @@ connect = (server, options, init) ->
 
 	while true  --  Loop for receiving messages
 		if state
-			state = coroutine.resume bot.init
+			state = resume bot.init
 		message = client\receive!
 		if message
 			bot.received message
