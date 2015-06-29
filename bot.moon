@@ -1,10 +1,12 @@
 require "socket"
 require "moonscript"
 require "irc"
+require "thread"
 
 
 port = 6666
 nick = "moonbot"
+version = "moonbot 0.1"
 
 
 privmsg = (lib, message) ->
@@ -12,7 +14,9 @@ privmsg = (lib, message) ->
 	import text, user, at from message
 
 	if text == ".bots"
-		lib.send at, "Reporting in! [Moonscript]"
+		lib.message at, "Reporting in! [Moonscript]"
+	if text == ".me"
+		lib.me at, "test"
 
 
 parse = (lib, msg) ->
@@ -22,12 +26,27 @@ parse = (lib, msg) ->
 			privmsg lib, { :text, :user, :at }
 
 
-irc.connect "irc.rizon.net", :nick, :port
-	init: (lib) ->
-		socket.sleep 3
+irc.connect "irc.rizon.net", :nick, :port, :version, (lib) ->
+	init = coroutine.create ->
+		wait 10
 		do
 			password = os.getenv "PASSWORD"
-			lib.send "NickServ", "IDENTIFY " .. password if password
-		socket.sleep 1
---		lib.join "#rice"
-		received: (msg) -> parse lib, msg
+			lib.message "NickServ", "IDENTIFY " .. password if password
+		wait 2
+		lib.join "#muhbottest"
+
+	received = (message) -> 
+		if message == message\match "PING :.+"
+			lib.send string.format "PONG %s", 
+				message\match "PING :(.+)"
+
+		elseif message == message\match ":[^%s]+ PRIVMSG [^%s]+ :\001VERSION\001"
+			lib.log "Sent version %s"\format version  --  if logging
+			lib.send string.format "NOTICE %s :\001VERSION %s\001", 
+				message\match ":(.-)![^%s]+ PRIVMSG [^%s]+ :\001VERSION\001",
+				version
+
+		else
+			parse lib, message
+
+	{ :init, :received }
