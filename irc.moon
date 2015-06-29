@@ -4,9 +4,8 @@ require "socket" unless socket
 local log
 do
 	logging = not not os.getenv "LOG"
-	log = (str, overwrite) ->
-		if logging or overwrite
-			print string.format "LOG:\009%s", str
+	log = (str) ->
+		print string.format "LOG:\009%s", str if logging
 
 
 msg = (client, message) ->

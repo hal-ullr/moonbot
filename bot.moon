@@ -41,7 +41,7 @@ irc.connect "irc.rizon.net", :nick, :port, :version, (lib) -> {
 				message\match "PING :(.+)"
 
 		elseif message == message\match ":[^%s]+ PRIVMSG [^%s]+ :\001VERSION\001"
-			lib.log "Sent version %s"\format version  --  if logging
+			lib.log ("Sent version %s"\format version)
 			lib.send string.format "NOTICE %s :\001VERSION %s\001", 
 				message\match ":(.-)![^%s]+ PRIVMSG [^%s]+ :\001VERSION\001",
 				version
